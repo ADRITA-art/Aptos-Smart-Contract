@@ -55,6 +55,13 @@ The `VotingPoll` struct stores the following information:
 
 ## 📜 Contract Details
 
+### Contract Address
+The screenshot of the transaction is given below:
+
+![Screenshot 2025-04-22 210712](https://github.com/user-attachments/assets/9fd50b2e-ed3e-42f5-9681-7c7fcbee2463)
+
+
+
 ### Module Address
 The module is deployed at the following address:
 ```
