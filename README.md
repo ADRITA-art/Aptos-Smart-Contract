@@ -79,7 +79,11 @@ The module is deployed at the following address:
 ```
 0x412c6160333439b980c7ea6e4aa11b677ec79a33171047185c64895b8ad318e6
 ```
-
+### Transaction Address
+The transaction is at the following address:
+```
+0xd967596e59970aeeee0e70b87185a8794f7330ad26b3e61f89da430fc374a358
+```
 ### Dependencies
 This module depends on the following Aptos framework modules:
 - `std::signer`
