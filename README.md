@@ -1,55 +1,69 @@
-# 🗳️ SimpleVoting Module
+# 🏥 Healthcare Token Incentive System
 
-This Move module implements a basic decentralized voting system on the Aptos blockchain. It enables users to create polls with multiple options and allows others to vote securely and transparently. Each voter can only vote once per poll.
+This Move module implements a healthcare token incentive system on the Aptos blockchain. It enables healthcare administrators to add participants and reward them with tokens for various healthcare activities such as completing wellness programs, regular checkups, or maintaining healthy habits.
 
 ---
 
 ## 📌 Features
 
-1. **Create Poll**:
-   - Users can initiate a voting poll by specifying multiple options.
-   - Each poll is stored under the creator's account.
+1. **Initialize System**:
+   - Administrators can initialize the token system to manage participants and rewards.
+   - The system is stored under the administrator's account.
 
-2. **Vote in Poll**:
-   - Any Aptos account can vote for a specific option in an active poll.
-   - Each account is allowed only **one vote per poll**.
-   - The poll remains open until manually closed (extension idea) or can be handled off-chain.
+2. **Manage Participants**:
+   - Administrators can add participants to the incentive program.
+   - Only approved participants can receive rewards.
+
+3. **Reward Distribution**:
+   - Administrators can send token rewards to participants.
+   - Only registered participants are eligible to receive rewards.
 
 ---
 
 ## 🧱 Data Structures
 
-### `VotingPoll`
-The `VotingPoll` struct stores the following information:
-- `creator`: Address of the poll creator.
-- `options`: A list of voting options (stored as `vector<u8>` for UTF-8 strings).
-- `votes`: A parallel vector of vote counts corresponding to each option.
-- `voters`: A list of addresses that have already voted.
-- `is_active`: A boolean flag indicating whether voting is still open.
+### `HealthcareToken`
+The `HealthcareToken` struct stores the following information:
+- `admin`: Address of the system administrator.
+- `participants`: A list of participant addresses eligible for rewards.
+- `total_rewards`: Total rewards distributed through the system.
 
 ---
 
 ## 🚫 Error Codes
 
-- `E_ALREADY_VOTED (1)`: Raised when a user attempts to vote more than once in a single poll.
-- `E_VOTING_CLOSED (2)`: Raised when a user attempts to vote in a poll that is no longer active.
+- `E_NOT_ADMIN (1)`: Raised when a non-administrator attempts to perform admin-only actions.
+- `E_INVALID_PARTICIPANT (2)`: Raised when attempting to reward an unregistered participant.
+- `E_INSUFFICIENT_REWARD (3)`: Raised when there are insufficient funds for a reward.
 
 ---
 
 ## 🔧 Functions
 
-### `create_poll`
+### `initialize`
 - **Parameters**:
-  - `creator`: The signer of the transaction (poll creator).
-  - `options`: A vector of UTF-8 encoded voting options.
-- **Description**: Initializes a new poll with zero votes for each option and activates it.
+  - `admin`: The signer of the transaction (system administrator).
+- **Description**: Initializes a new healthcare token system with the caller as the administrator.
 
-### `vote`
+### `add_participant`
 - **Parameters**:
-  - `voter`: The signer of the transaction (voter).
-  - `poll_creator`: The address of the poll's creator.
-  - `option_index`: The index of the chosen option.
-- **Description**: Allows a user to vote on an active poll, increments the vote count for the selected option, and records the voter's address to prevent double voting.
+  - `admin`: The signer of the transaction (administrator).
+  - `participant`: The address of the participant to add.
+- **Description**: Allows the administrator to add a new participant to the incentive program.
+
+### `reward_participant`
+- **Parameters**:
+  - `admin`: The signer of the transaction (administrator).
+  - `participant`: The address of the participant to reward.
+  - `reward_amount`: The amount of AptosCoin to transfer as a reward.
+- **Description**: Transfers AptosCoin tokens from the administrator to a registered participant as a reward.
+
+### `is_participant`
+- **Parameters**:
+  - `admin_addr`: The address of the administrator.
+  - `participant`: The address to check.
+- **Returns**: Boolean indicating whether the address is a registered participant.
+- **Description**: Utility function to check if an address is registered in the system.
 
 ---
 
@@ -58,9 +72,7 @@ The `VotingPoll` struct stores the following information:
 ### Contract Address
 The screenshot of the transaction is given below:
 
-![Screenshot 2025-04-22 210712](https://github.com/user-attachments/assets/9fd50b2e-ed3e-42f5-9681-7c7fcbee2463)
-
-
+![alt text](<Screenshot 2025-04-24 004640.png>)
 
 ### Module Address
 The module is deployed at the following address:
@@ -70,56 +82,61 @@ The module is deployed at the following address:
 
 ### Dependencies
 This module depends on the following Aptos framework modules:
-- `aptos_framework::account` (currently unused)
-- `aptos_framework::signer`
+- `std::signer`
 - `std::vector`
+- `aptos_framework::coin`
+- `aptos_framework::aptos_coin`
 
 ### Access Control
-- Only the **creator** can create a poll.
-- Any **unique address** can vote once per poll.
-- Voting is restricted once the poll is marked inactive.
+- Only the **administrator** can add participants and distribute rewards.
+- Only **registered participants** can receive rewards.
 
 ### State Management
-- Each poll is stored on-chain under the creator’s account.
-- The `VotingPoll` struct uses the `key` ability, allowing storage in global state.
-- Voting history is stored on-chain via the `voters` vector.
+- The healthcare token system is stored on-chain under the administrator's account.
+- The `HealthcareToken` struct uses the `key` ability, allowing storage in global state.
+- Participant history is stored on-chain via the `participants` vector.
 
 ---
 
 ## 📌 Usage Examples
 
-1. **Create a Poll**:
+1. **Initialize the System**:
    ```move
-   create_poll(&signer, vector[vector[0x41], vector[0x42]]); // A, B
+   initialize(&admin_signer);
    ```
 
-2. **Vote for Option 1**:
+2. **Add a Participant**:
    ```move
-   vote(&signer, poll_creator_address, 0); // votes for first option
+   add_participant(&admin_signer, 0x123...); // Add participant with address 0x123...
+   ```
+
+3. **Reward a Participant**:
+   ```move
+   reward_participant(&admin_signer, 0x123..., 100); // Reward 100 AptosCoin
    ```
 
 ---
 
 ## 💡 Notes
 
-- Poll options are stored as byte vectors (`vector<u8>`) and should represent UTF-8 strings.
-- The system does **not currently auto-close polls** after a deadline or maximum votes—consider adding it in future iterations.
-- This module is minimalistic by design to serve as a base for more complex DAO or governance systems.
+- This system uses Aptos's native AptosCoin for rewards.
+- The administrator must have sufficient AptosCoin to distribute rewards.
+- This module is minimalistic by design to serve as a base for more complex healthcare incentive systems.
 
 ---
 
 ## 🔮 Future Scope
 
-- ⏳ Add poll expiration or time-based closing
-- 🥇 Winner detection and announcement
-- 🔐 Zero-knowledge anonymous voting support
-- 🧾 Voting events or logs for off-chain indexing
-- 📲 Frontend integration with UI to display options and results
+- ⏳ Add time-based reward tiers
+- 🥇 Achievement badges or NFT rewards
+- 🔐 Privacy-preserving health data integration
+- 🧾 Activity tracking for fitness and wellness metrics
+- 📲 Frontend integration with UI to display rewards and participant status
 
 ---
 
 ## ⚖️ License
 
-This module is provided as-is under an open-source license. You are free to modify, extend, and use it in your own decentralized applications and governance tools.
+This module is provided as-is under an open-source license. You are free to modify, extend, and use it in your own healthcare applications and incentive programs.
 
 ---

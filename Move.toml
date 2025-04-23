@@ -1,15 +1,15 @@
 [package]
-name = "smart"
-version = "1.0.0"
+name = "HealthcareToken"
+version = "0.0.1"
 authors = []
 
-[addresses]
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "mainnet" }
+
+[my-addresses]
+TokenIncentiveHealthcare = "0x412c6160333439b980c7ea6e4aa11b677ec79a33171047185c64895b8ad318e6"
 
 [dev-addresses]
-
-[dependencies.AptosFramework]
-git = "https://github.com/aptos-labs/aptos-framework.git"
-rev = "mainnet"
-subdir = "aptos-framework"
+my_add='0x412c6160333439b980c7ea6e4aa11b677ec79a33171047185c64895b8ad318e6'
 
 [dev-dependencies]
